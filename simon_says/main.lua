@@ -40,8 +40,6 @@ function love.load()
 
     math.randomseed(os.time())
 
-    playerActions = {}
-
     mainmenu = MainMenuScreen:new()
     game = GamePlayScreen:new()
     gameover = nil
@@ -92,7 +90,7 @@ function love.keypressed(key, scancode, isrepeat)
 
     if key == 's' then 
         if(STATE == 1) then 
-            playerActions = {}
+            game.playerActions = {}
             game.localstate=2
             game.runned = false
         end

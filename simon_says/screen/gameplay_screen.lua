@@ -10,6 +10,7 @@ function GamePlayScreen:new()
     gameplayscreen.score = 0
     gameplayscreen.round_status = false
     gameplayscreen.runned = false
+    gameplayscreen.playerActions = {}
     --[[
         0 - Wait State
         1 - Screen.
@@ -72,12 +73,12 @@ function GamePlayScreen:draw()
     if(DEBUG_MODE) then
         love.graphics.print("State: " .. STATE, 100, 100)
         --love.graphics.print("Actions: " .. playerActions[], 100, 200)
-        for i=1, #playerActions do 
-            love.graphics.print(playerActions[i], 100, 100 + i*10)
+        for i=1, #self.playerActions do 
+            love.graphics.print(self.playerActions[i], 100, 100 + i*10)
         end
 
-        if(#playerActions == 3) then
-            if(areTablesEqual(playerActions, self.moves) and (#playerActions == #self.moves)) then 
+        if(#self.playerActions == 3) then
+            if(areTablesEqual(self.playerActions, self.moves) and (#self.playerActions == #self.moves)) then 
                 love.graphics.print("Success", 200, 200)
             else
                 love.graphics.print("Mistake", 200, 200)
@@ -164,20 +165,20 @@ function play(moves, buttons)
     local mouse_x, mouse_y = love.mouse.getPosition()
 
     for k, v in ipairs(buttons) do 
-        if (v:isHovered(mouse_x, mouse_y) and v:isClicked() and not oldMouseDown and (sizeOf(playerActions) ~= sizeOf(moves))) then 
-            table.insert(playerActions, k)
+        if (v:isHovered(mouse_x, mouse_y) and v:isClicked() and not oldMouseDown and (sizeOf(game.playerActions) ~= sizeOf(moves))) then 
+            table.insert(game.playerActions, k)
 
-            for i=1, #playerActions do 
-                if(playerActions[i] ~= moves[i]) then 
+            for i=1, #game.playerActions do 
+                if(game.playerActions[i] ~= moves[i]) then 
                     gameover = GameOverScreen:new(game.score)
                     STATE = 2 -- GameOver
                 end
             end
 
-            if (areTablesEqual(moves, playerActions)) then 
+            if (areTablesEqual(moves, game.playerActions)) then 
                 game.score = game.score + 100
                 game.runned = false
-                playerActions = {}
+                game.playerActions = {}
                 table.insert(game.moves, createNewMove())
                 game.localstate = 0 --Wait
                 Timer.after(2, function() game.localstate = 2 end)
