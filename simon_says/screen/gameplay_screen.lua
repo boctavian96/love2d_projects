@@ -5,11 +5,13 @@ function GamePlayScreen:new()
     local gameplayscreen = {}
     setmetatable(gameplayscreen, GamePlayScreen)
     gameplayscreen.simonButtons = createButtons(createColors(), sounds)
+    gameplayscreen.beginButton = UiButton:new('Begin', {0.8, 0.8, 0.8}, 100, 50, 420, 400, function() game.localstate = 2 end)
     gameplayscreen.moves = createMoves(3)
     gameplayscreen.score = 0
     gameplayscreen.round_status = false
     gameplayscreen.runned = false
     --[[
+        0 - Wait State
         1 - Screen.
         2 - Computer shows moves.
         3 - Play.
@@ -20,7 +22,11 @@ function GamePlayScreen:new()
 end
 
 function GamePlayScreen:update(dt)
-        if(self.localstate == 1 or self.localstate == 3) then
+        if(self.localstate == 1) then 
+            self.beginButton:update(dt)
+        end
+
+        if(self.localstate == 0 or self.localstate == 1 or self.localstate == 3) then
 
         for k, v in ipairs(self.simonButtons) do 
             v:update(dt, self.localstate)
@@ -46,12 +52,21 @@ function GamePlayScreen:update(dt)
 end
 
 function GamePlayScreen:draw()
+    originalFont = love.graphics.getFont()
+    scoreFont = love.graphics.newFont(25)
+
+    if (self.localstate == 1) then 
+        self.beginButton:draw()
+    end
+
     for k, v in ipairs(self.simonButtons) do
         v:draw()
     end
 
     love.graphics.setColor(COLOR_WHITE)
-    love.graphics.print("Score: " .. self.score, SCREEN_SIZE.WIDTH / 2.5, 50)
+    love.graphics.setFont(scoreFont)
+    love.graphics.print("Score: " .. self.score, SCREEN_SIZE.WIDTH / 2.45, 50)
+    love.graphics.setFont(originalFont)
 
     --DEBUG
     if(DEBUG_MODE) then
@@ -149,7 +164,7 @@ function play(moves, buttons)
     local mouse_x, mouse_y = love.mouse.getPosition()
 
     for k, v in ipairs(buttons) do 
-        if (v:isHovered(mouse_x, mouse_y) and v:isClicked()) then 
+        if (v:isHovered(mouse_x, mouse_y) and v:isClicked() and not oldMouseDown and (sizeOf(playerActions) ~= sizeOf(moves))) then 
             table.insert(playerActions, k)
 
             for i=1, #playerActions do 
@@ -164,6 +179,7 @@ function play(moves, buttons)
                 game.runned = false
                 playerActions = {}
                 table.insert(game.moves, createNewMove())
+                game.localstate = 0 --Wait
                 Timer.after(2, function() game.localstate = 2 end)
             end
         end

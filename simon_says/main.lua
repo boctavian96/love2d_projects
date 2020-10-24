@@ -87,7 +87,7 @@ function love.keypressed(key, scancode, isrepeat)
     end
 
     if key == 'r' then 
-        STATE = 1
+        restart()
     end
 
     if key == 's' then 
@@ -97,5 +97,14 @@ function love.keypressed(key, scancode, isrepeat)
             game.runned = false
         end
     end
+end
+
+function restart()
+    if(STATE == 2) then 
+        game = GamePlayScreen:new()
+        gameover = nil
+        STATE = 1
+    end
+
 end
 

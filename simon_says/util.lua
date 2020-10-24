@@ -12,3 +12,16 @@ function areTablesEqual(t1, t2)
 
     return true
 end
+
+function sizeOf(t)
+    local size = 0
+
+    for i=0, #t do 
+        if(t ~= nil) then 
+            size = size + 1
+        end
+    end
+
+    return size
+
+end

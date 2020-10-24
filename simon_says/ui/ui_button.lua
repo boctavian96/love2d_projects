@@ -40,7 +40,7 @@ function UiButton:draw()
 
     love.graphics.setColor(self.color)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-    love.graphics.setColor({0, 0, 0, 1}) --Black for text
+    love.graphics.setColor(COLOR_BLACK) --Black for text
     love.graphics.print(self.text, self.x + self.width/3, self.y + self.height/3)
 
 end
