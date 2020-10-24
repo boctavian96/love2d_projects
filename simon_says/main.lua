@@ -3,6 +3,7 @@
 require 'ui.ui_button'
 require 'screen.mainmenu_screen'
 require 'screen.gameplay_screen'
+require 'screen.gameover_screen'
 require 'button'
 
 DEBUG_MODE = false
@@ -19,6 +20,7 @@ COLOR_YELLOW = {0.8, 0.8, 0, 1}
 COLOR_GREEN = {0, 0.8, 0, 1}
 COLOR_BLUE = {0, 0, 0.8, 1}
 COLOR_WHITE = {1, 1, 1, 1}
+COLOR_BLACK = {0, 0, 0, 1}
 
 SCREEN_SIZE = {WIDTH = love.graphics.getWidth(), HEIGHT = love.graphics.getHeight(), WORLD_UNITS = 60}
 
@@ -34,9 +36,6 @@ Timer = require "library.hump.timer"
 Utils = require "util"
 
 function love.load()
-
-    round_status = false
-    runned = false
     oldMouseDown = nil
 
     math.randomseed(os.time())
@@ -45,6 +44,7 @@ function love.load()
 
     mainmenu = MainMenuScreen:new()
     game = GamePlayScreen:new()
+    gameover = nil
 
 end
 
@@ -59,16 +59,24 @@ function love.update(dt)
         game:update(dt)
     end
 
+    if(STATE == 2) then 
+        gameover:update(dt)
+    end
+ 
     oldMouseDown = love.mouse.isDown(1)
 end
 
 function love.draw()
-    if(STATE==0) then 
+    if(STATE == 0) then 
         mainmenu:draw()
     end
 
-    if(STATE==1) then
+    if(STATE == 1) then
         game:draw()
+    end
+
+    if(STATE == 2) then 
+        gameover:draw()
     end
 
 end
@@ -86,7 +94,7 @@ function love.keypressed(key, scancode, isrepeat)
         if(STATE == 1) then 
             playerActions = {}
             game.localstate=2
-            runned = false
+            game.runned = false
         end
     end
 end

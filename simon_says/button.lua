@@ -17,12 +17,12 @@ function Button:new(color, x, y, size, sound)
 
 end
 
-function Button:update()
+function Button:update(dt, state)
     local mouse_x, mouse_y = love.mouse.getPosition()
 
     if(self:isHovered(mouse_x, mouse_y)) then 
         self.color = self.hoverColor
-        if(self:isClicked()) then 
+        if(self:isClicked() and state == 3) then 
             self:click()
         else
             self.color = self.hoverColor

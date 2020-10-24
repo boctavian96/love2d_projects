@@ -7,6 +7,13 @@ function GamePlayScreen:new()
     gameplayscreen.simonButtons = createButtons(createColors(), sounds)
     gameplayscreen.moves = createMoves(3)
     gameplayscreen.score = 0
+    gameplayscreen.round_status = false
+    gameplayscreen.runned = false
+    --[[
+        1 - Screen.
+        2 - Computer shows moves.
+        3 - Play.
+    ]]
     gameplayscreen.localstate = 1
 
     return gameplayscreen
@@ -16,10 +23,10 @@ function GamePlayScreen:update(dt)
         if(self.localstate == 1 or self.localstate == 3) then
 
         for k, v in ipairs(self.simonButtons) do 
-            v:update()
+            v:update(dt, self.localstate)
         end
 
-        if(round_status) then 
+        if(self.round_status) then 
             table.insert(self.moves, createNewMove())
         end
 
@@ -29,9 +36,10 @@ function GamePlayScreen:update(dt)
     end
 
     if(self.localstate == 2) then 
-        if(not runned) then
-            playRound(self.moves, self.simonButtons)
-            runned = true
+        if(not self.runned) then
+            pushTheButtons(self.moves, self.simonButtons)
+            --playRound(self.moves, self.simonButtons)
+            self.runned = true
         end
     end
 
@@ -116,14 +124,12 @@ function playRound(moves, buttons)
     pushTheButtons(moves, buttons)
 
     --Jucatorul repeta string-ul
-    --play(moves, buttons)
+    play(moves, buttons)
 end
 
 function pushTheButtons(moves, buttons)
    
     local waitTime = 1
-
-    --Timer.after(waitTime * #moves, function() STATE=1 end)    
 
     Timer.script(function(wait)
         for i=1, #moves do 
@@ -148,13 +154,17 @@ function play(moves, buttons)
 
             for i=1, #playerActions do 
                 if(playerActions[i] ~= moves[i]) then 
-                    STATE = 2
+                    gameover = GameOverScreen:new(game.score)
+                    STATE = 2 -- GameOver
                 end
             end
 
             if (areTablesEqual(moves, playerActions)) then 
-                game.localstate = 1
-                love.graphics.print("Success", 100, 200)
+                game.score = game.score + 100
+                game.runned = false
+                playerActions = {}
+                table.insert(game.moves, createNewMove())
+                Timer.after(2, function() game.localstate = 2 end)
             end
         end
     end
